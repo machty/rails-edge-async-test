@@ -1,3 +1,16 @@
 <h2>Falcon Rails test</h2>
 
-<%= @wat %>
+<h3>Results of concurrent fetch</h3>
+
+<p>Elapsed time: <%= @time.round(2) %>s</p>
+
+<ol>
+  <% @results.each do |tag, result| %>
+    <li><%= tag %>: <%= result %></li>
+  <% end %>
+</ol>
+
+<h3>Log</h3>
+
+
+<pre><%= @messages.join("\n")%></pre>

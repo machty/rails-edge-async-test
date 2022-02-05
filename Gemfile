@@ -9,8 +9,11 @@ gem "rails", path: "/Users/machty/.gem/ruby/3.1.0/bundler/gems/rails-6a55aff4a9f
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+gem "httparty"
+
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", "~> 1.4"
+# gem "sqlite3", "~> 1.4"
+gem 'pg'
 
 # Use the Puma web server [https://github.com/puma/puma]
 # gem "puma", "~> 5.0"
