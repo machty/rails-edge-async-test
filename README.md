@@ -15,7 +15,10 @@ Fiber-friendly concurrent manner out of the box. And with a Fiber-safe connectio
 now ActiveRecord queries can be made concurrently with a Fiber-centric server like Falcon.
 
 The following text is a sample rendering of the
-[application#index](./app/controllers/application_controller.rb) route:
+[application#index](./app/controllers/application_controller.rb) route.
+What it demonstrates is that multiple concurrent operations that each
+take about a second to complete all finish within ~1.5s (it would be
+closed to 1 but my internet is slow and I'm hitting an external HTTP server).
 
 ```
 Falcon Rails test
@@ -33,7 +36,9 @@ Postgres pg_sleep(1) 1: #<PG::Result:0x000000010d154dd0>
 Postgres pg_sleep(1) 2: #<PG::Result:0x000000010d15e3d0>
 redis push after Kernel#sleep: 1
 redis blocking pop: ["queue", "2"]
+
 Log
+
 0.0s Kernel#sleep(1) 0 starting on Fiber 94300
 0.0s Kernel#sleep(1) 1 starting on Fiber 94340
 0.0s Kernel#sleep(1) 2 starting on Fiber 94380
