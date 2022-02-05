@@ -5,6 +5,11 @@ class ApplicationController < ActionController::Base
     @time = Benchmark.realtime do
       tasks = [
         3.times.map do |i|
+          run_in_async_task("Kernel#sleep(1) #{i}") do
+            sleep 1
+          end
+        end,
+        3.times.map do |i|
           run_in_async_task("HTTParty #{i}") do
             HTTParty.get("https://httpstat.us/200?sleep=1000")
           end
@@ -13,6 +18,13 @@ class ApplicationController < ActionController::Base
           run_in_async_task("Postgres pg_sleep(1) #{i}") do
             ActiveRecord::Base.connection.execute("select pg_sleep(1);")
           end
+        end,
+        run_in_async_task("redis push after Kernel#sleep") do
+          sleep 1
+          REDIS1.rpush "queue", 2
+        end,
+        run_in_async_task("redis blocking pop") do
+          REDIS2.blpop "queue"
         end,
       ].flatten
 
