@@ -14,10 +14,49 @@ get this to work, but now a vast majority of common/mainstream gems work in a
 Fiber-friendly concurrent manner out of the box. And with a Fiber-safe connection pool,
 now ActiveRecord queries can be made concurrently with a Fiber-centric server like Falcon.
 
-See the [application controller](./app/controllers/application_controller.rb) for
-how the screenshot below is rendered:
+The following text is a sample rendering of the
+[application#index](./app/controllers/application_controller.rb) route:
 
-![screenshot](./index_screenshot.png)
+```
+Falcon Rails test
+Results of concurrent fetch
+Elapsed time: 1.49s
+
+Kernel#sleep(1) 0: 1
+Kernel#sleep(1) 1: 1
+Kernel#sleep(1) 2: 1
+HTTParty 0: 200 OK
+HTTParty 1: 200 OK
+HTTParty 2: 200 OK
+Postgres pg_sleep(1) 0: #<PG::Result:0x000000010d157eb8>
+Postgres pg_sleep(1) 1: #<PG::Result:0x000000010d154dd0>
+Postgres pg_sleep(1) 2: #<PG::Result:0x000000010d15e3d0>
+redis push after Kernel#sleep: 1
+redis blocking pop: ["queue", "2"]
+Log
+0.0s Kernel#sleep(1) 0 starting on Fiber 94300
+0.0s Kernel#sleep(1) 1 starting on Fiber 94340
+0.0s Kernel#sleep(1) 2 starting on Fiber 94380
+0.0s HTTParty 0 starting on Fiber 94420
+0.0s HTTParty 1 starting on Fiber 94460
+0.0s HTTParty 2 starting on Fiber 94500
+0.0s Postgres pg_sleep(1) 0 starting on Fiber 94540
+0.01s Postgres pg_sleep(1) 1 starting on Fiber 94560
+0.01s Postgres pg_sleep(1) 2 starting on Fiber 94580
+0.01s redis push after Kernel#sleep starting on Fiber 94600
+0.01s redis blocking pop starting on Fiber 94640
+1.0s Kernel#sleep(1) 0 done in
+1.0s Kernel#sleep(1) 1 done in
+1.0s Kernel#sleep(1) 2 done in
+1.01s Postgres pg_sleep(1) 0 done in
+1.01s redis blocking pop done in
+1.01s redis push after Kernel#sleep done in
+1.01s Postgres pg_sleep(1) 1 done in
+1.01s Postgres pg_sleep(1) 2 done in
+1.47s HTTParty 2 done in
+1.47s HTTParty 0 done in
+1.49s HTTParty 1 done in
+```
 
 ## Requirements
 
